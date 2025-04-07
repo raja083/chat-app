@@ -1,1 +1,1 @@
-export const DB_NAME = "StreamX"
+export const DB_NAME = "messenger";

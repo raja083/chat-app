@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
             type:String,
             required:true,
             lowercase:true,
-            trim: true,  //removes only leading ans trailing spaces
+            trim: true,  //removes only leading and trailing spaces
         },
         avatar:{ 
             type:String,  //Cloudinary ka url
