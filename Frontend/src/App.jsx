@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import Navbar from "./components/Navbar";
+import { Routes, Route , Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
+import SettingsPage from "./pages/SettingsPage";
+import ProfilePage from "./pages/ProfilePage";
+import { axiosInstance } from "./lib/axios";
+import { useAuthStore } from "./store/useAuthStore";
+import { Loader } from "lucide-react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  //get the authorised user
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore(); //these are the states from the zustand state management
 
+  //as soon as app is loaded get the authorised user.
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  console.log(authUser);
+
+  //while loading the user show an animation of a loader
+  if (isCheckingAuth && !authUser) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader className="size-10 animate-spin" />
+      </div>
+    );
+  }
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {/* //At the top of every page we want a navbar */}
+      <Navbar />
+      <Routes>
+
+        {/* //if an authorised user then only get to the home page  */}
+        <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />}/>
+
+        {/* // If the user is not logged in then only get to the signup page */}
+        <Route path="/signup" element={!authUser?<SignUpPage />:<Navigate to="/"  />}/>
+        
+        {/* // If the user is not logged in then only get to the login page */}
+        <Route path="/login" element={ !authUser ? <LoginPage />: <Navigate to="/"/>} />
+
+        
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
